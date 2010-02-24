@@ -34,7 +34,7 @@ class CommerceProductCRUDTestCase extends DrupalWebTestCase {
     $types_created = commerce_product_types();
 
     // Ensure each type exists
-    foreach ($default_types as $type => $name) {    
+    foreach ($default_types as $type => $name) {
       $this->assertTrue(!empty($types_created[$type]), t('Product type %type has been created', array('%type' => $type)));
     }
   }
@@ -98,3 +98,82 @@ class CommerceProductCRUDTestCase extends DrupalWebTestCase {
   
   }
 }
+
+
+
+/**
+ * Test the rules integration.
+ */
+class CommerceProductRulesTestCase extends DrupalWebTestCase {
+  public static function getInfo() {
+    return array(
+      'name' => 'Commerce product rules integration',
+      'description' => 'Tests the commerce product rules integration',
+      'group' => 'Drupal Commerce',
+    );
+  }
+
+  function setUp() {
+    parent::setUp('commerce_product', 'rules');
+  }
+  
+  /**
+   * Calculates the output of t() given an array of placeholders to replace.
+   */
+  static function t($text, $strings) {
+    $placeholders = array();
+    foreach ($strings as $string) {
+      $placeholders['%' . $string] = drupal_placeholder(array('text' => $string));
+    }
+    return strtr($text, $placeholders);
+  }
+  
+  /**
+   * Tests rules CRUD actions for products.
+   */
+  function testRulesCRUD() {
+    $type = commerce_product_type_new();
+    $type->type = 'foo';
+    commerce_product_type_save($type);
+    drupal_static_reset();
+    
+    //TODO: test creation when metadata is there.
+    /*
+    $action = rules_action('entity_create', array(
+      'type' => 'commerce_product',
+      'param_type' => $type,
+    ));
+    $action->access();
+    $action->execute();
+    
+    
+    $text = RulesLog::logger()->render();
+    $pos = strpos($text, self::t('Added the provided variable %entity_created of type %commerce_product', array('entity_created', 'commerce_product')));
+    $pos = ($pos !== FALSE) ? strpos($text, self::t('Saved %entity_created of type %commerce_product.', array('entity_created', 'commerce_product')), $pos) : FALSE;
+    $this->assertTrue($pos !== FALSE, 'Product has been created and saved.');
+    */
+
+    
+    $product = commerce_product_new($type);
+    commerce_product_save($product);
+    debug('d');
+    $rule = rule();
+    $rule->action('entity_fetch', array('type' => 'commerce_product', 'id' => $product->product_id, 'entity_fetched:var' => 'product'));
+    $rule->action('entity_save', array('data:select' => 'product', 'immediate' => TRUE));
+    $rule->action('entity_delete', array('data:select' => 'product'));
+    $rule->access();
+    $rule->integrityCheck()->execute();
+    $text = RulesLog::logger()->render();
+    $pos = strpos($text, RulesTestCase::t('Evaluating the action %entity_fetch.', array('entity_fetch')));
+    $pos = ($pos !== FALSE) ? strpos($text, self::t('Added the provided variable %commerce_product of type %commerce_product', array('commerce_product')), $pos) : FALSE;
+    $pos = ($pos !== FALSE) ? strpos($text, self::t('Saved %commerce_product of type %commerce_product.', array('commerce_product')), $pos) : FALSE;
+    $pos = ($pos !== FALSE) ? strpos($text, self::t('Evaluating the action %entity_delete.', array('entity_delete')), $pos) : FALSE;
+    $this->assertTrue($pos !== FALSE, 'Product has been fetched, saved and deleted.');
+    debug(RulesLog::logger()->render());
+    
+  }
+  
+}
+
+
+  
