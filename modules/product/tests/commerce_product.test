@@ -238,8 +238,9 @@ class CommerceProductRulesTestCase extends DrupalWebTestCase {
     // Populate $values with all values that are setable. They will be set
     // with an metadata wrapper, so we also test setting that way.
     $values = array();
-    foreach (entity_metadata_wrapper('commerce_product') as $name => $wrapper) {
-      $info = $wrapper->info();
+    $wrapper = entity_metadata_wrapper('commerce_product');
+    foreach ($wrapper as $name => $child) {
+      $info = $wrapper->$name->info();
       if (!empty($info['setter callback'])) {
         $info += array('type' => 'text');
         $values[$name] = $this->createValue($info['type'], $info);
@@ -254,7 +255,50 @@ class CommerceProductRulesTestCase extends DrupalWebTestCase {
       $this->assertValue($wrapper, $key);
     }
   }
-}
-
-
   
+  /**
+   * Assert the value for the given property is returned.
+   */
+  protected function assertValue($wrapper, $key) {
+    $this->assertTrue($wrapper->$key->value() !== NULL, check_plain($key) . ' property returned.');
+    $info = $wrapper->$key->info();
+    if (!empty($info['raw getter callback'])) {
+      // Also test getting the raw value
+      $this->assertTrue($wrapper->$key->raw() !== NULL, check_plain($key) . ' raw value returned.');
+    }
+  }
+  
+  /**
+   * Creates a value for the given data type.
+   */
+  protected function createValue($type, $info) {
+    if (!isset($this->node)) {
+      // Create some entities to use the first time this runs.
+      $this->node = $this->drupalCreateNode(array('type' => 'article'));
+      $this->user = $this->drupalCreateUser();
+    }
+
+    if (isset($info['options list'])) {
+      $options = array_keys($info['options list']());
+      return entity_metadata_list_extract_type($type) ? array(reset($options)) : reset($options);
+    }
+
+    switch ($type) {
+      case 'decimal':
+      case 'integer':
+      case 'duration':
+        return 1;
+      case 'date':
+        return time();
+      case 'boolean':
+        return TRUE;
+      case 'text':
+        return drupal_strtolower($this->randomName(8));
+      case 'text_formatted':
+        return array('value' => $this->randomName(16));
+
+      default:
+        return $this->$type;
+    }
+  }
+}
