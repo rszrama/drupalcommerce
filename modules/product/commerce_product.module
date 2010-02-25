@@ -253,8 +253,13 @@ function commerce_product_new($type = '') {
  * Creation callback for entity metadata.
  */
 function _commerce_product_create($values = array()) {
-  $product = commerce_product_new();
-  return entity_metadata_create_object($values + (array)$product, 'commerce_product');
+  $product = commerce_product_new($values['type']);
+  unset($values['type']);
+  $wrapper = entity_metadata_wrapper('commerce_product', $product);
+  foreach ($values as $name => $value) {
+    $wrapper->$name->set($value);
+  }
+  return $wrapper;
 }
 
 /**

@@ -195,41 +195,40 @@ class CommerceProductRulesTestCase extends DrupalWebTestCase {
    * Tests rules CRUD actions for products.
    */
   function testRulesCRUD() {
-    
-    //TODO: test creation when metadata is there.
-    /*
+    // Test creation.
     $action = rules_action('entity_create', array(
       'type' => 'commerce_product',
-      'param_type' => $type,
+      'param_type' => 'product',
+      'param_sku' => 'foo',
+      'param_title' => 'bar',
+      'param_creator' => $GLOBALS['user'],
     ));
+    // Test running access() and execute.
     $action->access();
     $action->execute();
-    
     
     $text = RulesLog::logger()->render();
     $pos = strpos($text, self::t('Added the provided variable %entity_created of type %commerce_product', array('entity_created', 'commerce_product')));
     $pos = ($pos !== FALSE) ? strpos($text, self::t('Saved %entity_created of type %commerce_product.', array('entity_created', 'commerce_product')), $pos) : FALSE;
     $this->assertTrue($pos !== FALSE, 'Product has been created and saved.');
-    */
-
     
-    $product = commerce_product_new($this->product_type);
+    $product = commerce_product_new('product');
     commerce_product_save($product);
-    debug('d');
     $rule = rule();
     $rule->action('entity_fetch', array('type' => 'commerce_product', 'id' => $product->product_id, 'entity_fetched:var' => 'product'));
     $rule->action('entity_save', array('data:select' => 'product', 'immediate' => TRUE));
     $rule->action('entity_delete', array('data:select' => 'product'));
+    // Test running access and integrtiy check + execute.
     $rule->access();
     $rule->integrityCheck()->execute();
     $text = RulesLog::logger()->render();
     $pos = strpos($text, RulesTestCase::t('Evaluating the action %entity_fetch.', array('entity_fetch')));
-    $pos = ($pos !== FALSE) ? strpos($text, self::t('Added the provided variable %commerce_product of type %commerce_product', array('commerce_product')), $pos) : FALSE;
-    $pos = ($pos !== FALSE) ? strpos($text, self::t('Saved %commerce_product of type %commerce_product.', array('commerce_product')), $pos) : FALSE;
+    $pos = ($pos !== FALSE) ? strpos($text, self::t('Added the provided variable %product of type %commerce_product', array('product', 'commerce_product')), $pos) : FALSE;
+    $pos = ($pos !== FALSE) ? strpos($text, self::t('Saved %product of type %commerce_product.', array('product', 'commerce_product')), $pos) : FALSE;
     $pos = ($pos !== FALSE) ? strpos($text, self::t('Evaluating the action %entity_delete.', array('entity_delete')), $pos) : FALSE;
     $this->assertTrue($pos !== FALSE, 'Product has been fetched, saved and deleted.');
-    debug(RulesLog::logger()->render());
-    
+    //debug(RulesLog::logger()->render());
+    $this->assertFalse(commerce_product_load($product->product_id), 'Product has been deleted.');
   }
   
   /**
