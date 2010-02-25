@@ -8,16 +8,37 @@
 
 /**
  * The controller class for products contains all the CRUD operations for
- * commerce products. The default loader, provided by core, is used for the
+ * Commerce products. The default loader, provided by core, is used for the
  * loading operation.
  */
 class CommerceProductEntityController extends DrupalDefaultEntityController {
 
   /**
+   * Create a default product.
+   *
+   * @param $type
+   *   The machine-readable type of the product.
+   *
+   * @return
+   *   A product object with all default fields initialized.
+   */
+  public function create($type = '') {
+    return (object) array(
+      'product_id' => '',
+      'sku' => '',
+      'type' => $type,
+      'title' => '',
+      'uid' => '',
+      'created' => '',
+      'changed' => '',
+    );
+  }
+
+  /**
    * Saves a product.
    *
    * @param $product
-   *
+   *   The fully loaded product object to save.
    * @return
    *   TRUE on success, FALSE otherwise.
    */
@@ -103,26 +124,5 @@ class CommerceProductEntityController extends DrupalDefaultEntityController {
     }
 
     return TRUE;
-  }
-
-  /**
-   * Create a default product.
-   *
-   * @param $type
-   *   The machine-readable type of the product.
-   *
-   * @return
-   *   A product object with all default fields initialized.
-   */
-  public function create($type = '') {
-    return (object) array(
-      'product_id' => '',
-      'sku' => '',
-      'type' => $type,
-      'title' => '',
-      'uid' => '',
-      'created' => '',
-      'changed' => '',
-    );
   }
 }
