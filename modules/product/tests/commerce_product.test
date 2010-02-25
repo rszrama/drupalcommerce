@@ -96,7 +96,7 @@ class CommerceProductCRUDTestCase extends DrupalWebTestCase {
     $deleted_type = commerce_product_type_load($type);
     $this->assertFalse($deleted_type, t('commerce_product_type_delete() successfully removed a product type.'));
   }
- 
+
   /**
    * Test the product crud
    */
@@ -151,13 +151,13 @@ class CommerceProductCRUDTestCase extends DrupalWebTestCase {
     $this->assertTrue($return, t('commerce_product_delete() returned TRUE when deleting a product'));
     $deleted_product_load = commerce_product_load_multiple(array($new_product->product_id), array(), TRUE);
     $this->assertFalse($deleted_product_load, t('commerce_product_load_multiple() could not load the deleted product'));
-    
+
     // Ensure commerce_product_delete_multiple() can delete multiple products.
     $return = commerce_product_delete_multiple(array_keys($saved_products));
     $this->assertTrue($return, t('commerce_product_delete_multiple() returned TRUE when deleting a product'));
     $deleted_products_load = commerce_product_load_multiple(array_keys($saved_products), array(), TRUE);
     $this->assertFalse($deleted_product_load, t('commerce_product_load_multiple() could not load the deleted products'));
-    
+
   }
 }
 
@@ -167,7 +167,7 @@ class CommerceProductCRUDTestCase extends DrupalWebTestCase {
  * Test the rules and entity metadata integration.
  */
 class CommerceProductRulesTestCase extends DrupalWebTestCase {
-  
+
   public static function getInfo() {
     return array(
       'name' => 'Commerce product rules integration',
@@ -179,7 +179,7 @@ class CommerceProductRulesTestCase extends DrupalWebTestCase {
   function setUp() {
     parent::setUp('commerce_product', 'rules');
   }
-  
+
   /**
    * Calculates the output of t() given an array of placeholders to replace.
    */
@@ -190,7 +190,7 @@ class CommerceProductRulesTestCase extends DrupalWebTestCase {
     }
     return strtr($text, $placeholders);
   }
-  
+
   /**
    * Tests rules CRUD actions for products.
    */
@@ -206,12 +206,12 @@ class CommerceProductRulesTestCase extends DrupalWebTestCase {
     // Test running access() and execute.
     $action->access();
     $action->execute();
-    
+
     $text = RulesLog::logger()->render();
     $pos = strpos($text, self::t('Added the provided variable %entity_created of type %commerce_product', array('entity_created', 'commerce_product')));
     $pos = ($pos !== FALSE) ? strpos($text, self::t('Saved %entity_created of type %commerce_product.', array('entity_created', 'commerce_product')), $pos) : FALSE;
     $this->assertTrue($pos !== FALSE, 'Product has been created and saved.');
-    
+
     $product = commerce_product_new('product');
     commerce_product_save($product);
     $rule = rule();
@@ -230,7 +230,7 @@ class CommerceProductRulesTestCase extends DrupalWebTestCase {
     //debug(RulesLog::logger()->render());
     $this->assertFalse(commerce_product_load($product->product_id), 'Product has been deleted.');
   }
-  
+
   /**
    * Tests making use of product metadata.
    */
@@ -249,13 +249,13 @@ class CommerceProductRulesTestCase extends DrupalWebTestCase {
     $values['type'] = 'product';
     $product = entity_metadata_entity_create('commerce_product', $values)->value();
     $this->assertTrue($product, "Created a product and set all setable values.");
-    
+
     $wrapper = entity_metadata_wrapper('commerce_product', $product);
     foreach ($wrapper as $key => $child) {
       $this->assertValue($wrapper, $key);
     }
   }
-  
+
   /**
    * Assert the value for the given property is returned.
    */
@@ -267,7 +267,7 @@ class CommerceProductRulesTestCase extends DrupalWebTestCase {
       $this->assertTrue($wrapper->$key->raw() !== NULL, check_plain($key) . ' raw value returned.');
     }
   }
-  
+
   /**
    * Creates a value for the given data type.
    */
@@ -300,5 +300,39 @@ class CommerceProductRulesTestCase extends DrupalWebTestCase {
       default:
         return $this->$type;
     }
+  }
+
+
+  /**
+   * Tests making use of the product 'presave' event and loading the unchanged
+   * product.
+   */
+  public function testProductEvent() {
+    $rule = rules_reaction_rule();
+    $rule->event('commerce_product_presave')
+         ->condition('data_is', array('data:select' => 'product:type', 'value' => 'product'))
+         ->condition(rules_condition('data_is', array('data:select' => 'product:sku', 'value:select' => 'product_unchanged:sku'))->negate())
+         ->action('entity_delete', array('data:select' => 'product'));
+    // Try running access and integrity checks.
+    $rule->access();
+    $rule->integrityCheck();
+    // Save it.
+    $rule->save('commerce_product_test1', 'commerce_product');
+
+    // Force immediate cache clearing so we can test the rule *now*.
+    rules_clear_cache(TRUE);
+
+    // Create initial product.
+    $product = commerce_product_new('product');
+    $product->sku = 'foo';
+    commerce_product_save($product);
+
+    $this->assertTrue(commerce_product_load($product->product_id), 'Reaction rule not fired.');
+
+    // Now update, so that the rule fires.
+    $product->sku = 'bar';
+    commerce_product_save($product);
+    $this->assertFalse(commerce_product_load($product->product_id), 'Reaction rule fired.');
+    RulesLog::logger()->checkLog();
   }
 }
