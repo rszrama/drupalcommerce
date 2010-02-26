@@ -296,17 +296,19 @@ function commerce_product_new($type = '') {
 }
 
 /**
- * Creation callback for entity metadata.
- *
- * Requirement of the Entity API module.
+ * Creation callback for the Entity Metadata module.
  */
 function _commerce_product_create($values = array()) {
+  // Create a new product of the specified type.
   $product = commerce_product_new($values['type']);
   unset($values['type']);
+
   $wrapper = entity_metadata_wrapper('commerce_product', $product);
+
   foreach ($values as $name => $value) {
     $wrapper->$name->set($value);
   }
+
   return $wrapper;
 }
 

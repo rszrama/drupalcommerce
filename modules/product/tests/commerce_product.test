@@ -157,14 +157,11 @@ class CommerceProductCRUDTestCase extends DrupalWebTestCase {
     $this->assertTrue($return, t('commerce_product_delete_multiple() returned TRUE when deleting a product'));
     $deleted_products_load = commerce_product_load_multiple(array_keys($saved_products), array(), TRUE);
     $this->assertFalse($deleted_product_load, t('commerce_product_load_multiple() could not load the deleted products'));
-
   }
 }
 
-
-
 /**
- * Test the rules and entity metadata integration.
+ * Test the Rules and Entity Metadata integration.
  */
 class CommerceProductRulesTestCase extends DrupalWebTestCase {
 
