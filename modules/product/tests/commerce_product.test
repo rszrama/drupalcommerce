@@ -35,7 +35,7 @@ class CommerceProductCRUDTestCase extends DrupalWebTestCase {
 
     // Ensure each type exists
     foreach ($default_types as $type => $name) {
-      $this->assertTrue(!empty($types_created[$type]), t('Product type %type has been created', array('%type' => $type)));
+      $this->assertTrue(!empty($types_created[$type]), 'Product type ' . check_plain($type) . ' has been created');
     }
   }
 
@@ -45,10 +45,10 @@ class CommerceProductCRUDTestCase extends DrupalWebTestCase {
   function testCommerceProductTypeCrud() {
     // Ensure commerce_product_type_new() returns a valid empty product type.
     $new_product_type = commerce_product_type_new();
-    $this->assertNotNull($new_product_type->type, t('commerce_product_type_new() created the type element'));
-    $this->assertNotNull($new_product_type->name, t('commerce_product_type_new() created the help element'));
-    $this->assertNotNull($new_product_type->description, t('commerce_product_type_new() created the help element'));
-    $this->assertNotNull($new_product_type->help, t('commerce_product_type_new() created the help element'));
+    $this->assertNotNull($new_product_type->type, 'commerce_product_type_new() created the type element');
+    $this->assertNotNull($new_product_type->name, 'commerce_product_type_new() created the help element');
+    $this->assertNotNull($new_product_type->description, 'commerce_product_type_new() created the help element');
+    $this->assertNotNull($new_product_type->help, 'commerce_product_type_new() created the help element');
 
     // Define values for testing.
     $type = $this->randomName(20);
@@ -65,17 +65,17 @@ class CommerceProductCRUDTestCase extends DrupalWebTestCase {
 
     // Ensure content_product_type_save() returns the proper value when inserting.
     $return = commerce_product_type_save($new_product_type);
-    $this->assertEqual($return, SAVED_NEW, t('commerce_product_type_save() returned SAVED_NEW when saving a new product type'));
+    $this->assertEqual($return, SAVED_NEW, 'commerce_product_type_save() returned SAVED_NEW when saving a new product type');
 
     // Load the newly saved content type.
     $saved_product_type = commerce_product_type_load($type);
 
     // Ensure the values that were saved match the values that we created.
-    $this->assertTrue($saved_product_type, t('commerce_product_type_load() loaded the new product type'));
-    $this->assertEqual($type, $saved_product_type->type, t('The new product type field was properly saved and loaded'));
-    $this->assertEqual($name, $saved_product_type->name, t('The new product type name was properly saved and loaded'));
-    $this->assertEqual($description, $saved_product_type->description, t('The new product description text was properly saved and loaded'));
-    $this->assertEqual($help, $saved_product_type->help, t('The new product help text was properly saved and loaded'));
+    $this->assertTrue($saved_product_type, 'commerce_product_type_load() loaded the new product type');
+    $this->assertEqual($type, $saved_product_type->type, 'The new product type field was properly saved and loaded');
+    $this->assertEqual($name, $saved_product_type->name, 'The new product type name was properly saved and loaded');
+    $this->assertEqual($description, $saved_product_type->description, 'The new product description text was properly saved and loaded');
+    $this->assertEqual($help, $saved_product_type->help, 'The new product help text was properly saved and loaded');
 
     // Alter the title, to ensure the update function works.
     $altered_name = $this->randomName(40);
@@ -83,18 +83,18 @@ class CommerceProductCRUDTestCase extends DrupalWebTestCase {
 
     // Ensure commerce_product_type_save() returns the proper value when updating.
     $return = commerce_product_type_save($saved_product_type);
-    $this->assertEqual($return, SAVED_UPDATED, t('commerce_product_type_save() returned SAVED_UPDATED when saving a new product type'));
+    $this->assertEqual($return, SAVED_UPDATED, 'commerce_product_type_save() returned SAVED_UPDATED when saving a new product type');
 
     // Reset the cached product types, and verify commerce_product_types load the saved type.
     commerce_product_types_reset();
     $types = commerce_product_types();
-    $this->assertNotNull($types[$type], t('commerce_product_types_reset() successfully reset the product types.'));
-    $this->assertEqual($saved_product_type->name, $altered_name, t('commerce_product_type_save() successfully updated the product type name.'));
+    $this->assertNotNull($types[$type], 'commerce_product_types_reset() successfully reset the product types.');
+    $this->assertEqual($saved_product_type->name, $altered_name, 'commerce_product_type_save() successfully updated the product type name.');
 
     // Ensure commerce_product_type_delete() deletes a content type.
     commerce_product_type_delete($type);
     $deleted_type = commerce_product_type_load($type);
-    $this->assertFalse($deleted_type, t('commerce_product_type_delete() successfully removed a product type.'));
+    $this->assertFalse($deleted_type, 'commerce_product_type_delete() successfully removed a product type.');
   }
 
   /**
@@ -105,7 +105,7 @@ class CommerceProductCRUDTestCase extends DrupalWebTestCase {
     $new_product = commerce_product_new('product');
     $fields = array('product_id', 'sku', 'type', 'title', 'uid');
     foreach ($fields as $field) {
-      $this->assertNotNull($new_product->{$field}, t('commerce_product_new() returned a empty product with element %element.', array('%element' => $field)));
+      $this->assertNotNull($new_product->{$field}, 'commerce_product_new() returned a empty product with element ' . check_plain($field) . '.');
     }
     $new_product->sku = $sku = $this->randomName(10);
     $new_product->type = $type = 'product';
@@ -114,20 +114,20 @@ class CommerceProductCRUDTestCase extends DrupalWebTestCase {
 
     // Ensure commerce_product_save() returns TRUE when saving a new product
     $return = commerce_product_save($new_product);
-    $this->assertTrue($return, t('commerce_product_save() return TRUE when saving a new product'));
+    $this->assertTrue($return, 'commerce_product_save() return TRUE when saving a new product');
 
     //Ensure commerce_product_load() loaded the saved product.
     $loaded_product = commerce_product_load($new_product->product_id);
     foreach ($fields as $field) {
-      $this->assertEqual($loaded_product->{$field}, $new_product->{$field}, t('The loaded %field value loaded by commerce_product_load() matches the value saved by commerce_product_save()', array('%field' => $field)));
+      $this->assertEqual($loaded_product->{$field}, $new_product->{$field}, 'The loaded ' . check_plain($field) . ' value loaded by commerce_product_load() matches the value saved by commerce_product_save()');
     }
 
-    $this->assertTrue($loaded_product->created > 0, t('commerce_product_save() added a created date to the product'));
-    $this->assertTrue($loaded_product->changed > 0, t('commerce_product_save() added a changed date to the product'));
+    $this->assertTrue($loaded_product->created > 0, 'commerce_product_save() added a created date to the product');
+    $this->assertTrue($loaded_product->changed > 0, 'commerce_product_save() added a changed date to the product');
 
     // Ensure commerce_product_load_by_sku() can load a product by sku
     $loaded_product_by_sku = commerce_product_load_by_sku($sku);
-    $this->assertEqual($loaded_product_by_sku->product_id, $new_product->product_id, t('The id of the product loaded via commerce_product_load_by_sku matches the saved product id.'));
+    $this->assertEqual($loaded_product_by_sku->product_id, $new_product->product_id, 'The ID of the product loaded via commerce_product_load_by_sku matches the saved product ID.');
 
     // Ensure commerce_product_load_multiple() can load multiple multiple products.
     $saved_product_ids = array();
@@ -141,22 +141,22 @@ class CommerceProductCRUDTestCase extends DrupalWebTestCase {
       $saved_products[$product->product_id] = $product->title;
     }
     $loaded_products = commerce_product_load_multiple(array_keys($saved_products));
-    $this->assertEqual(count($saved_products), count($loaded_products), t('commerce_product_load_multiple() loaded the proper number of the products'));
+    $this->assertEqual(count($saved_products), count($loaded_products), 'commerce_product_load_multiple() loaded the proper number of the products');
     foreach ($loaded_products as $loaded_product) {
-      $this->assertEqual($loaded_product->title, $saved_products[$loaded_product->product_id], t('commerce_product_load_multiple() successfully loaded a product.'));
+      $this->assertEqual($loaded_product->title, $saved_products[$loaded_product->product_id], 'commerce_product_load_multiple() successfully loaded a product.');
     }
 
     // Ensure commerce_product_delete() can remove a product.
     $return = commerce_product_delete($new_product->product_id);
-    $this->assertTrue($return, t('commerce_product_delete() returned TRUE when deleting a product'));
+    $this->assertTrue($return, 'commerce_product_delete() returned TRUE when deleting a product');
     $deleted_product_load = commerce_product_load_multiple(array($new_product->product_id), array(), TRUE);
-    $this->assertFalse($deleted_product_load, t('commerce_product_load_multiple() could not load the deleted product'));
+    $this->assertFalse($deleted_product_load, 'commerce_product_load_multiple() could not load the deleted product');
 
     // Ensure commerce_product_delete_multiple() can delete multiple products.
     $return = commerce_product_delete_multiple(array_keys($saved_products));
-    $this->assertTrue($return, t('commerce_product_delete_multiple() returned TRUE when deleting a product'));
+    $this->assertTrue($return, 'commerce_product_delete_multiple() returned TRUE when deleting a product');
     $deleted_products_load = commerce_product_load_multiple(array_keys($saved_products), array(), TRUE);
-    $this->assertFalse($deleted_product_load, t('commerce_product_load_multiple() could not load the deleted products'));
+    $this->assertFalse($deleted_product_load, 'commerce_product_load_multiple() could not load the deleted products');
   }
 }
 
