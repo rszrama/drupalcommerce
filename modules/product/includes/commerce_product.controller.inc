@@ -14,10 +14,30 @@
 class CommerceProductEntityController extends DrupalDefaultEntityController {
 
   /**
+   * Create a default product.
+   *
+   * @param $type
+   *   The machine-readable type of the product.
+   * @return
+   *   A product object with all default fields initialized.
+   */
+  public function create($type = '') {
+    return (object) array(
+      'product_id' => '',
+      'sku' => '',
+      'type' => $type,
+      'title' => '',
+      'uid' => '',
+      'created' => '',
+      'changed' => '',
+    );
+  }
+
+  /**
    * Saves a product.
    *
    * @param $product
-   *
+   *   The full product object to save.
    * @return
    *   TRUE on success, FALSE otherwise.
    */
@@ -117,26 +137,5 @@ class CommerceProductEntityController extends DrupalDefaultEntityController {
     }
 
     return TRUE;
-  }
-
-  /**
-   * Create a default product.
-   *
-   * @param $type
-   *   The machine-readable type of the product.
-   *
-   * @return
-   *   A product object with all default fields initialized.
-   */
-  public function create($type = '') {
-    return (object) array(
-      'product_id' => '',
-      'sku' => '',
-      'type' => $type,
-      'title' => '',
-      'uid' => '',
-      'created' => '',
-      'changed' => '',
-    );
   }
 }
