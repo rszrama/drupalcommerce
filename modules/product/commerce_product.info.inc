@@ -11,9 +11,10 @@
  */
 function commerce_product_entity_property_info() {
   $info = array();
+
   // Add meta-data about the basic commerce_product properties.
   $properties = &$info['commerce_product']['properties'];
-  
+
   $properties['product-id'] = array(
     'label' => t('Product ID'),
     'description' => t('The internal numeric ID of the product.'),
@@ -76,5 +77,6 @@ function commerce_product_entity_property_info() {
     'required' => TRUE,
     'clear' => array('uid'),
   );
+
   return $info;
 }
