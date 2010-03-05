@@ -39,7 +39,7 @@ class CommerceProductEntityController extends DrupalDefaultEntityController {
    * @param $product
    *   The full product object to save.
    * @return
-   *   TRUE on success, FALSE otherwise.
+   *   The saved product object on success, FALSE on failure.
    */
   public function save($product) {
     $transaction = db_transaction();
@@ -86,7 +86,7 @@ class CommerceProductEntityController extends DrupalDefaultEntityController {
       // saved product to be propagated to the slave.
       db_ignore_slave();
 
-      return TRUE;
+      return $product;
     }
     catch (Exception $e) {
       $transaction->rollback('commerce product', $e->getMessage(), array(), WATCHDOG_ERROR);
