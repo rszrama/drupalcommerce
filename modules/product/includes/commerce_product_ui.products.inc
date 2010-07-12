@@ -63,12 +63,6 @@ function commerce_product_ui_product_form($form, &$form_state, $product, $breadc
 
   $form = array();
 
-  // Make sure the product has a valid product type
-  if (!commerce_product_type_load($product->type)) {
-    drupal_set_message(t('The product type you have chosen is invalid.'), 'error');
-    return $form;
-  }
-
   // Add the default field elements.
   // TODO: Update description to include the acceptable product tokens.
   $form['sku'] = array(
