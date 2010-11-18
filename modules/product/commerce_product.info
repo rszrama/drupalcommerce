@@ -20,6 +20,7 @@ files[] = includes/commerce_product.controller.inc
 files[] = includes/views/commerce_product.views.inc
 
 ; Views handlers
+files[] = includes/views/handlers/commerce_product_handler_argument_product_id.inc
 files[] = includes/views/handlers/commerce_product_handler_field_product.inc
 files[] = includes/views/handlers/commerce_product_handler_field_product_type.inc
 files[] = includes/views/handlers/commerce_product_handler_field_product_link.inc
