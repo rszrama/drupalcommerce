@@ -13,6 +13,7 @@
 }
 
 .line-item-summary .links {
+  margin-top: .5em;
   clear: left;
 }
 
