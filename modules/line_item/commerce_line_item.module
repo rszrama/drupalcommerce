@@ -532,9 +532,10 @@ function commerce_line_item_field_info() {
     'commerce_line_item_reference' => array(
       'label' => t('Line item reference'),
       'description' => t('This field stores the ID of a related line item as an integer value.'),
+      'settings' => array(),
+      'instance_settings' => array(),
       'default_widget' => 'commerce_line_item_manager',
       'default_formatter' => 'commerce_line_item_reference_view',
-      'settings' => array(),
       'property_type' => 'commerce_line_item',
       'property_callbacks' => array('commerce_line_item_property_info_callback'),
     ),
@@ -1080,7 +1081,8 @@ function commerce_line_item_summary_links() {
 function commerce_line_item_field_views_data_alter(&$data, $field, $module) {
   // If the field is a line item reference field...
   if ($field['type'] == 'commerce_line_item_reference') {
-    $table = array_shift(array_keys($data));
+    $keys = array_keys($data);
+    $table = array_shift($keys);
 
     // Add the relationship data to the proper line_item_id column.
     foreach (array_keys($data[$table]) as $key) {
