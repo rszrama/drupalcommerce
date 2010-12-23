@@ -128,6 +128,8 @@ class CommercePaymentTransactionEntityController extends DrupalDefaultEntityCont
         $op = 'insert';
       }
       else {
+        // Invoke presave to let modules react before the save.
+        rules_invoke_all('commerce_payment_transaction_presave', $transaction);
         // Save the updated transaction and fields.
         drupal_write_record('commerce_payment_transaction', $transaction, 'transaction_id');
 
