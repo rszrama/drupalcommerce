@@ -11,6 +11,7 @@ files[] = commerce_customer.module
 files[] = commerce_customer.install
 
 ; Module includes
+files[] = commerce_customer.rules.inc
 files[] = includes/commerce_customer_profile.controller.inc
 
 ; Views include

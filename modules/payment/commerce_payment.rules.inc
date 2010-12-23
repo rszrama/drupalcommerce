@@ -20,10 +20,39 @@ function commerce_payment_rules_event_info() {
       'variables' => commerce_order_rules_variables(t('order')),
       'access callback' => 'commerce_order_rules_access',
     ),
+    'commerce_payment_transaction_presave' => array(
+      'label' => t('Before saving a payment transaction'),
+      'group' => t('Commerce - payment'),
+      'variables' => commerce_payment_rules_variables('payment_transaction'),
+      'access callback' => 'commerce_payment_rules_access',
+    ),
   );
+
+  // Specify that on presave the customer profile is saved anyway.
+  $items['commerce_payment_transaction_presave']['variables']['line_item']['skip save'] = TRUE;
 
   return $items;
 }
+
+function commerce_payment_rules_variables($type) {
+  $args = array();
+  if ($type == 'payment_transaction') {
+    $args['payment_transaction'] = array(
+      'type' => 'commerce_payment_transaction',
+      'label' => t('Payment transaction'),
+    );
+  }
+}
+
+/**
+ * Rules integration access callback.
+ */
+function commerce_payment_rules_access($type, $name) {
+  if ($type == 'event' || $type == 'condition') {
+    return TRUE;
+  }
+}
+
 
 /**
  * Implements hook_rules_action_info().
