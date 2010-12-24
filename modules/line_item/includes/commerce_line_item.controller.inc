@@ -60,7 +60,7 @@ class CommerceLineItemEntityController extends DrupalDefaultEntityController {
       // If this is a new line item...
       if (empty($line_item->line_item_id)) {
         // Give modules the opportunity to prepare field data for inserting.
-        rules_invoke_all('commerce_line_item_presave_insert', $line_item);
+        rules_invoke_all('commerce_line_item_presave', $line_item);
 
         // Set the creation timestamp.
         $line_item->created = REQUEST_TIME;
@@ -73,7 +73,7 @@ class CommerceLineItemEntityController extends DrupalDefaultEntityController {
       }
       else {
         // Give modules the opportunity to prepare field data for updating.
-        rules_invoke_all('commerce_line_item_presave_update', $line_item);
+        rules_invoke_all('commerce_line_item_presave', $line_item);
 
         // Save the updated line item and fields.
         drupal_write_record('commerce_line_item', $line_item, 'line_item_id');

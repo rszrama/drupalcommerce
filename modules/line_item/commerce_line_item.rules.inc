@@ -26,6 +26,7 @@ function commerce_line_item_rules_event_info() {
       'variables' => commerce_line_item_rules_variables(t('Updated line item'), TRUE),
       'access callback' => 'commerce_line_item_rules_access',
     ),
+<<<<<<< HEAD
     'commerce_line_item_presave_insert' => array(
       'label' => t('Before saving a new line item'),
       'group' => t('Commerce'),
@@ -34,6 +35,10 @@ function commerce_line_item_rules_event_info() {
     ),
     'commerce_line_item_presave_update' => array(
       'label' => t('Before saving an updated line item'),
+=======
+    'commerce_line_item_presave' => array(
+      'label' => t('Before saving a line item'),
+>>>>>>> b2c7989db369fca1e88d1da85a468978392be66f
       'group' => t('Commerce'),
       'variables' => commerce_line_item_rules_variables(t('Saved line item'), TRUE),
       'access callback' => 'commerce_line_item_rules_access',
@@ -47,8 +52,7 @@ function commerce_line_item_rules_event_info() {
   );
 
   // Specify that on presave the line item is saved anyway.
-  $items['commerce_line_item_presave_insert']['variables']['line_item']['skip save'] = TRUE;
-  $items['commerce_line_item_presave_update']['variables']['line_item']['skip save'] = TRUE;
+  $items['commerce_line_item_presave']['variables']['line_item']['skip save'] = TRUE;
 
   return $items;
 }
