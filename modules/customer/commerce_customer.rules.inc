@@ -18,7 +18,7 @@ function commerce_customer_rules_event_info() {
   $events['commerce_customer_profile_presave'] = array(
     'label' => t('Before saving a customer profile'),
     'group' => t('Commerce Customer'),
-    'variables' => commerce_customer_rules_event_variables(t('Customer profile'), TRUE),
+    'variables' => commerce_customer_rules_event_variables(t('Customer profile'), TRUE, TRUE),
     'access callback' => 'commerce_customer_rules_access',
   );
   $events['commerce_customer_profile_insert'] = array(
@@ -40,9 +40,6 @@ function commerce_customer_rules_event_info() {
     'access callback' => 'commerce_customer_rules_access',
   );
 
-  // Specify that on presave the customer profile is saved anyway.
-  $events['commerce_customer_profile_presave']['variables']['customer_profile']['skip save'] = TRUE;
-
   return $events;
 }
 
@@ -53,12 +50,16 @@ function commerce_customer_rules_event_info() {
  *   The label for the primary customer profile variable.
  * @param $unchanged
  *   Boolean indicating whether or not to include the unchanged customer profile.
+ * @param $skip_save
+ *   Boolean indicating whether or not the primary line item variable should
+ *     skip saving after event execution.
  */
-function commerce_customer_rules_event_variables($label, $unchanged = FALSE) {
+function commerce_customer_rules_event_variables($label, $unchanged = FALSE, $skip_save = FALSE) {
   $variables = array(
     'customer_profile' => array(
       'type' => 'commerce_customer_profile',
       'label' => $label,
+      'skip save' => $skip_save,
     ),
   );
 

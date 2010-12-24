@@ -18,7 +18,7 @@ function commerce_line_item_rules_event_info() {
   $events['commerce_line_item_presave'] = array(
     'label' => t('Before saving a line item'),
     'group' => t('Commerce Line Item'),
-    'variables' => commerce_line_item_rules_event_variables(t('Line item'), TRUE),
+    'variables' => commerce_line_item_rules_event_variables(t('Line item'), TRUE, TRUE),
     'access callback' => 'commerce_line_item_rules_access',
   );
   $events['commerce_line_item_insert'] = array(
@@ -40,9 +40,6 @@ function commerce_line_item_rules_event_info() {
     'access callback' => 'commerce_line_item_rules_access',
   );
 
-  // Specify that on presave the line item is saved anyway.
-  $events['commerce_line_item_presave']['variables']['line_item']['skip save'] = TRUE;
-
   return $events;
 }
 
@@ -53,12 +50,16 @@ function commerce_line_item_rules_event_info() {
  *   The label for the primary line item variable.
  * @param $unchanged
  *   Boolean indicating whether or not to include the unchanged line item.
+ * @param $skip_save
+ *   Boolean indicating whether or not the primary line item variable should
+ *     skip saving after event execution.
  */
-function commerce_line_item_rules_event_variables($label, $unchanged = FALSE) {
+function commerce_line_item_rules_event_variables($label, $unchanged = FALSE, $skip_save = FALSE) {
   $variables = array(
     'line_item' => array(
       'type' => 'commerce_line_item',
       'label' => $label,
+      'skip save' => $skip_save,
     ),
   );
 
