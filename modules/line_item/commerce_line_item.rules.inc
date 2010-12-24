@@ -26,19 +26,8 @@ function commerce_line_item_rules_event_info() {
       'variables' => commerce_line_item_rules_variables(t('Updated line item'), TRUE),
       'access callback' => 'commerce_line_item_rules_access',
     ),
-<<<<<<< HEAD
-    'commerce_line_item_presave_insert' => array(
-      'label' => t('Before saving a new line item'),
-      'group' => t('Commerce'),
-      'variables' => commerce_line_item_rules_variables(t('Saved line item'), TRUE),
-      'access callback' => 'commerce_line_item_rules_access',
-    ),
-    'commerce_line_item_presave_update' => array(
-      'label' => t('Before saving an updated line item'),
-=======
     'commerce_line_item_presave' => array(
       'label' => t('Before saving a line item'),
->>>>>>> b2c7989db369fca1e88d1da85a468978392be66f
       'group' => t('Commerce'),
       'variables' => commerce_line_item_rules_variables(t('Saved line item'), TRUE),
       'access callback' => 'commerce_line_item_rules_access',
