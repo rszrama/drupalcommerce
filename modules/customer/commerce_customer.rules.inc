@@ -68,6 +68,7 @@ function commerce_customer_rules_event_variables($label, $unchanged = FALSE, $sk
     $variables['customer_profile_unchanged'] = array(
       'type' => 'commerce_customer_profile',
       'label' => t('Unchanged customer profile'),
+      'skip save' => TRUE,
       'handler' => 'rules_events_entity_unchanged',
     );
   }

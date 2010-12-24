@@ -68,6 +68,7 @@ function commerce_line_item_rules_event_variables($label, $unchanged = FALSE, $s
     $variables['line_item_unchanged'] = array(
       'type' => 'commerce_line_item',
       'label' => t('Unchanged line item'),
+      'skip save' => TRUE,
       'handler' => 'rules_events_entity_unchanged',
     );
   }
