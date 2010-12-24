@@ -109,8 +109,6 @@ class CommerceCustomerProfileEntityController extends DrupalDefaultEntityControl
         $op = 'insert';
       }
       else {
-        // Invoke presave to let modules react before the save.
-        rules_invoke_all('commerce_customer_profile_presave', $profile);
         // Save the updated profile and fields.
         drupal_write_record('commerce_customer_profile', $profile, 'profile_id');
 
