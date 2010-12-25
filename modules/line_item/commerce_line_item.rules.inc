@@ -130,7 +130,7 @@ function commerce_line_item_rules_action_info() {
           'description' => $value['amount description'],
         ),
       ),
-      'group' => t('Commerce line item'),
+      'group' => t('Commerce Line Item'),
     );
   }
 
@@ -147,7 +147,7 @@ function commerce_line_item_rules_action_info() {
         'options list' => 'commerce_currency_get_code',
       ),
     ),
-    'group' => t('Commerce line item'),
+    'group' => t('Commerce Line Item'),
   );
 
   return $actions;
