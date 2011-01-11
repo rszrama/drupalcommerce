@@ -77,7 +77,7 @@ function commerce_line_item_ui_form_alter(&$form, &$form_state, $form_id) {
 
 /**
  * Implements hook_views_api().
- *
+ */
 function commerce_line_item_ui_views_api() {
   return array(
     'api' => 2,
