@@ -31,7 +31,7 @@ function commerce_product_entity_property_info() {
   $properties['type'] = array(
     'label' => t('Type'),
     'description' => t('The type of the product.'),
-    'type' => 'token',
+    'type' => 'text',
     'setter callback' => 'entity_property_verbatim_set',
     'setter permission' => 'administer products',
     'options list' => 'commerce_product_type_options_list',
@@ -55,6 +55,14 @@ function commerce_product_entity_property_info() {
   $properties['created'] = array(
     'label' => t('Date created'),
     'description' => t('The date the product was created.'),
+    'type' => 'date',
+    'setter callback' => 'entity_property_verbatim_set',
+    'query callback' => 'entity_metadata_table_query',
+    'setter permission' => 'administer products',
+  );
+  $properties['changed'] = array(
+    'label' => t('Date updated'),
+    'description' => t('The date the product was changed.'),
     'type' => 'date',
     'setter callback' => 'entity_property_verbatim_set',
     'query callback' => 'entity_metadata_table_query',
