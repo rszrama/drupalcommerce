@@ -55,7 +55,6 @@ function commerce_checkout_menu() {
     'weight' => 0,
     'file' => 'includes/commerce_checkout.admin.inc',
   );
-
   $items['admin/commerce/config/checkout/rules'] = array(
     'title' => 'Checkout rules',
     'description' => 'Enable and configure checkout completion rules.',
