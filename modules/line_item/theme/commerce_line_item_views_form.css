@@ -1,6 +1,6 @@
 /* $Id$ */
 
-#commerce-cart-form input.remove-line-item {
+.commerce-line-item-views-form input.delete-line-item {
   background: #fff url(buttons.png) 0 0 repeat-x;
   border: 1px solid #e4e4e4;
   border-bottom: 1px solid #b4b4b4;
@@ -20,11 +20,16 @@
   border-radius: 15px;
 }
 
-#commerce-cart-form input.remove-line-item:hover,
-#commerce-cart-form input.remove-line-item:focus {
+.commerce-line-item-views-form input.delete-line-item:hover,
+.commerce-line-item-views-form input.delete-line-item:focus {
   background: #dedede;
 }
 
-#commerce-cart-form .form-actions {
+.commerce-line-item-views-form .cart-subtotal {
+  text-align: right;
+  font-size: 1.5em;
+}
+
+.commerce-line-item-views-form .commerce-line-item-actions {
   text-align: right;
 }

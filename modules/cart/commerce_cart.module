@@ -116,6 +116,31 @@ function commerce_cart_commerce_line_item_summary_link_info() {
 }
 
 /**
+ * Implements hook_form_alter().
+ */
+function commerce_cart_form_alter(&$form, &$form_values, $form_id) {
+  if (strpos($form_id, 'commerce_line_item_views_form_commerce_cart_form_') === 0) {
+    // Change the Save button to say Update cart.
+    $form['actions']['update']['#value'] = t('Update cart');
+    $form['actions']['update']['#submit'] = array_merge($form['#submit'], array('commerce_cart_line_item_views_form_submit'));
+
+    // Change any Delete buttons to say Remove.
+    if (!empty($form['edit_delete'])) {
+      foreach(element_children($form['edit_delete']) as $line_item_id) {
+        $form['edit_delete'][$line_item_id]['#value'] = t('Remove');
+      }
+    }
+  }
+}
+
+/**
+ * Submit handler to show the shopping cart updated message.
+ */
+function commerce_cart_line_item_views_form_submit($form, &$form_state) {
+  drupal_set_message(t('Your shopping cart has been updated.'));
+}
+
+/**
  * Implements hook_commerce_order_delete().
  */
 function commerce_cart_commerce_order_delete($order) {
@@ -148,9 +173,6 @@ function commerce_cart_theme() {
       'variables' => array('order' => NULL, 'contents_view' => NULL),
       'path' => drupal_get_path('module', 'commerce_cart') . '/theme',
       'template' => 'commerce-cart-block',
-    ),
-    'commerce_cart_form_product_table' => array(
-      'render element' => 'form',
     ),
   );
 }
@@ -1004,9 +1026,10 @@ function commerce_cart_add_to_cart_form($form, &$form_state, $product_ids, $show
           // A field qualifies if it is single value, required and uses a widget
           // with a definite set of options. For the sake of simplicity, this is
           // currently restricted to fields defined by the options module.
+          // Currently product attribute fields cannot be translatable either.
           $field = field_info_field($instance['field_name']);
 
-          if ($field['cardinality'] == 1 && $instance['required'] && $instance['widget']['module'] == 'options') {
+          if ($field['cardinality'] == 1 && $instance['required'] && $instance['widget']['module'] == 'options' && empty($field['translatable'])) {
             // Get the options properties from the options module and store the
             // options for the instance in select list format in the array of
             // qualifying fields.

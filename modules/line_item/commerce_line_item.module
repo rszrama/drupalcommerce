@@ -101,7 +101,52 @@ function commerce_line_item_theme() {
       'path' => drupal_get_path('module', 'commerce_line_item') . '/theme',
       'template' => 'commerce-line-item-summary',
     ),
+    'commerce_line_item_views_form' => array(
+      'render element' => 'form',
+    ),
+    'commerce_line_item_actions' => array(
+      'variables' => array('buttons' => NULL),
+    ),
   );
+}
+
+/**
+ * Implements hook_forms().
+ *
+ * To provide distinct form IDs for line item Views forms, the View name and
+ * specific display name are appended to the base ID,
+ * commerce_line_item_views_form. When such a form is built or submitted, this
+ * function will return the proper callback function to use for the given form.
+ */
+function commerce_line_item_forms($form_id, $args) {
+  if (strpos($form_id, 'commerce_line_item_views_form_') === 0) {
+    return array(
+      $form_id => array(
+        'callback' => 'commerce_line_item_views_form',
+      ),
+    );
+  }
+}
+
+/**
+ * Returns a form ID for a line item Views form using the name and display of
+ *   the View used to build the form.
+ */
+function commerce_line_item_views_form_id($view) {
+  $parts = array(
+    'commerce_line_item_views_form',
+    $view->name,
+    $view->current_display,
+  );
+
+  return implode('_', $parts);
+}
+
+/**
+ * Submit handler used when clicking the update button.
+ */
+function commerce_line_item_line_item_views_form_submit($form, &$form_state) {
+  drupal_set_message(t('Line items saved.'));
 }
 
 /**
@@ -262,6 +307,13 @@ function commerce_line_item_field_attach_delete($entity_type, $entity) {
   if (!empty($line_item_ids)) {
     commerce_line_item_delete_multiple($line_item_ids);
   }
+}
+
+/**
+ * Theme line item edit form actions.
+ */
+function theme_commerce_line_item_actions($variables) {
+  return '<div class="commerce-line-item-actions">' . $variables['buttons'] . '</div>';
 }
 
 /**
