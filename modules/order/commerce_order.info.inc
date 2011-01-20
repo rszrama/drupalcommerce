@@ -55,6 +55,13 @@ function commerce_order_entity_property_info() {
     'query callback' => 'entity_metadata_table_query',
     'required' => TRUE,
   );
+  $properties['state'] = array(
+    'label' => t('State'),
+    'description' => t('The state of the order derived from its status.'),
+    'type' => 'token',
+    'getter callback' => 'commerce_order_get_properties',
+    'options list' => 'commerce_order_state_options_list',
+  );
   $properties['created'] = array(
     'label' => t('Date created'),
     'description' => t('The date the order was created.'),
@@ -89,6 +96,12 @@ function commerce_order_entity_property_info() {
     'setter permission' => 'administer orders',
     'required' => TRUE,
     'clear' => array('uid'),
+  );
+  $properties['mail'] = array(
+    'label' => t('Order e-mail'),
+    'description' => t('The e-mail address associated with this order.'),
+    'setter callback' => 'entity_property_verbatim_set',
+    'validation callback' => 'valid_email_address',
   );
 
   return $info;

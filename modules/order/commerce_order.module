@@ -925,6 +925,9 @@ function commerce_order_get_properties($order, array $options, $name) {
       return url('admin/commerce/orders/' . $order->order_id, $options);
     case 'edit-url':
       return url('admin/commerce/orders/' . $order->order_id . '/edit', $options);
+    case 'state':
+      $order_status = commerce_order_status_load($order->status);
+      return $order_status->state;
   }
 }
 
@@ -936,4 +939,21 @@ function commerce_order_set_properties($order, $name, $value) {
   if ($name == 'owner') {
     $order->uid = $value;
   }
+}
+
+/**
+ * Implements hook_commerce_checkout_pane_info().
+ */
+function commerce_order_commerce_checkout_pane_info() {
+  $checkout_panes = array();
+
+  $checkout_panes['order_mail'] = (object) array(
+    'title' => t('Order mail'),
+    'file' => 'includes/commerce_order.checkout_pane.inc',
+    'base' => 'commerce_order_mail_pane',
+    'page' => 'checkout',
+    'weight' => 3,
+  );
+
+  return $checkout_panes;
 }
