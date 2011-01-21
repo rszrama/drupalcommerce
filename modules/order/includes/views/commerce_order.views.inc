@@ -113,7 +113,7 @@ function commerce_order_views_data() {
   // Expose the order state.
   $data['commerce_order']['state'] = array(
     'title' => t('Order state'),
-   	'help' => t('The workflow state of the order.'),
+    'help' => t('The workflow state of the order.'),
     'field' => array(
       'handler' => 'commerce_order_handler_field_order_state',
       'click sortable' => TRUE,
