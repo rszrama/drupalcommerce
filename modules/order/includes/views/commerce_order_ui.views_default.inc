@@ -359,6 +359,15 @@ function commerce_order_ui_views_default_views() {
   );
   $handler->display->display_options['arguments']['uid']['break_phrase'] = 0;
   $handler->display->display_options['arguments']['uid']['not'] = 0;
+  /* Filter: Commerce Order: Order state */
+  $handler->display->display_options['filters']['state']['id'] = 'state';
+  $handler->display->display_options['filters']['state']['table'] = 'commerce_order';
+  $handler->display->display_options['filters']['state']['field'] = 'state';
+  $handler->display->display_options['filters']['state']['operator'] = 'not in';
+  $handler->display->display_options['filters']['state']['value'] = array(
+    'cart' => 'cart',
+    'checkout' => 'checkout',
+  );
 
   /* Display: User Orders */
   $handler = $view->new_display('page', 'User Orders', 'order_page');
@@ -371,7 +380,7 @@ function commerce_order_ui_views_default_views() {
   $handler->display->display_options['tab_options']['description'] = 'User orders in the store.';
   $handler->display->display_options['tab_options']['weight'] = '';
   $handler->display->display_options['tab_options']['name'] = 'user-menu';
-  $translatables['customer_orders'] = array(
+  $translatables['commerce_user_orders'] = array(
     t('Defaults'),
     t('Orders'),
     t('more'),
@@ -383,7 +392,7 @@ function commerce_order_ui_views_default_views() {
     t('Items per page'),
     t('- All -'),
     t('Offset'),
-    t('No orders have been created yet.'),
+    t('You have not placed any orders with us yet.'),
     t('Order owner'),
     t('Uid'),
     t('Order ID'),
