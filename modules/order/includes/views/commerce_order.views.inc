@@ -100,10 +100,26 @@ function commerce_order_views_data() {
       'click sortable' => TRUE,
     ),
     'filter' => array(
-      'handler' => 'commerce_order_handler_filter_status',
+      'handler' => 'commerce_order_handler_filter_order_status',
     ),
     'sort' => array(
       'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+    ),
+  );
+
+  // Expose the order state.
+  $data['commerce_order']['state'] = array(
+    'title' => t('Order state'),
+    'help' => t('The workflow state of the order.'),
+    'field' => array(
+      'handler' => 'commerce_order_handler_field_order_state',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'commerce_order_handler_filter_order_state',
     ),
     'argument' => array(
       'handler' => 'views_handler_argument_string',
@@ -173,4 +189,19 @@ function commerce_order_views_data() {
   );
 
   return $data;
+}
+
+/**
+ * Implements hook_views_plugins
+ */
+function commerce_order_views_plugins() {
+  return array(
+    'argument validator' => array(
+      'commerce_user' => array(
+        'title' => t('Commerce Order User'),
+        'handler' => 'commerce_order_plugin_argument_validate_user',
+        'path' => drupal_get_path('module', 'commerce_order') . '/includes/views/handlers', // not necessary for most modules
+      ),
+    ),
+  );
 }
