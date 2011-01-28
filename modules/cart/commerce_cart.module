@@ -73,7 +73,7 @@ function commerce_cart_commerce_order_status_info() {
 function commerce_cart_commerce_checkout_pane_info() {
   $checkout_panes = array();
 
-  $checkout_panes['cart_contents'] = (object) array(
+  $checkout_panes['cart_contents'] = array(
     'title' => t('Shopping cart contents'),
     'base' => 'commerce_cart_contents_pane',
     'file' => 'includes/commerce_cart.checkout_pane.inc',

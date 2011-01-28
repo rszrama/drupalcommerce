@@ -153,7 +153,7 @@ function commerce_customer_commerce_checkout_pane_info() {
   $weight = 5;
 
   foreach (commerce_customer_profile_types() as $type => $profile_type) {
-    $checkout_panes['customer_profile_' . $type] = (object) array(
+    $checkout_panes['customer_profile_' . $type] = array(
       'title' => $profile_type->name,
       'file' => 'includes/commerce_customer.checkout_pane.inc',
       'base' => 'commerce_customer_profile_pane',
