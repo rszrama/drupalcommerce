@@ -10,7 +10,7 @@ class commerce_order_handler_filter_order_state extends views_handler_filter_in_
       $this->value_title = t('State');
 
       foreach (commerce_order_states() as $name => $state) {
-        $options[$name] = $state->title;
+        $options[$name] = $state['title'];
       }
       $this->value_options = $options;
     }
@@ -22,7 +22,7 @@ class commerce_order_handler_filter_order_state extends views_handler_filter_in_
     }
     $this->ensure_my_table();
     $status = commerce_order_status_load(reset($this->value));
-    $states = commerce_order_statuses(array('state' => $status->state));
+    $states = commerce_order_statuses(array('state' => $status['state']));
 
     $this->query->add_where($this->options['group'], "$this->table_alias.status", array_keys($states), $this->operator);
   }
