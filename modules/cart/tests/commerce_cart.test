@@ -1,0 +1,69 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * Unit tests for the commerce cart module.
+ */
+
+/**
+ * Test cart features.
+ */
+class CommerceCartTestCase extends CommerceBaseTestCase {
+  public static function getInfo() {
+    return array(
+      'name' => 'Commerce cart tests',
+      'description' => 'Tests cart features like add to cart, remove from cart, update quantities...',
+      'group' => 'Drupal Commerce',
+    );
+  }
+
+  function setUp() {
+    $modules = parent::setUpHelper('all');
+    parent::setUp($modules);
+
+    $this->site_admin = $this->createSiteAdmin();
+  }
+
+  /**
+   * Test adding a product to the cart.
+   */
+  public function testCommerceCartOperations() {
+    $this->drupalLogin($this->site_admin);
+    // Create a dummy product display content type.
+    $this->createDummyProductDisplayContentType();
+
+    // Create dummy product display nodes (and their corresponding product
+    //  entities),
+    $sku = 'PROD-01';
+    $product_name = 'Product One';
+    $product = $this->createDummyProduct($sku, $product_name);
+    $product_node = $this->createDummyProductNode($product->product_id, $product_name);
+    // Submit the add to cart form.
+    $this->drupalPost('node/' . $product_node->nid, array(), t('Add to cart'));
+
+    // Get the cart url.
+    $links = commerce_line_item_summary_links();
+    $cart_url = $links['view_cart']['href'];
+    $this->drupalGet($cart_url);
+
+    // Test if the page resolves and there is something in the cart.
+    $this->assertResponse(200);
+    $this->assertNoText(t('Your shopping cart is empty.'), t('Cart is not empty'));
+    $this->assertText($product->title, t('Product was added to the cart'));
+
+    // Change quantity
+    $this->drupalPost($cart_url, array('edit_quantity[1]' => 2), t('Update cart'));
+    $this->assertResponse(200);
+    $this->assertFieldByXPath("//input[starts-with(@id, 'edit-edit-quantity')]", 2, t('Cart updated'));
+
+    // Remove the product from the cart.
+    $this->drupalPost($cart_url, array(), t('Remove'));
+
+    // Test if the page resolves and there is something in the cart.
+    $this->assertResponse(200);
+    $this->assertText(t('Your shopping cart is empty.'), t('Cart is empty'));
+
+  }
+
+}
