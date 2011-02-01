@@ -8,11 +8,7 @@ class commerce_order_handler_filter_order_state extends views_handler_filter_in_
   function get_value_options() {
     if (!isset($this->value_options)) {
       $this->value_title = t('State');
-
-      foreach (commerce_order_states() as $name => $state) {
-        $options[$name] = $state['title'];
-      }
-      $this->value_options = $options;
+      $this->value_options = commerce_order_state_get_title();
     }
   }
 
@@ -20,15 +16,22 @@ class commerce_order_handler_filter_order_state extends views_handler_filter_in_
     if (empty($this->value)) {
       return;
     }
-    $this->ensure_my_table();
-    $status = commerce_order_status_load(reset($this->value));
-    $states = commerce_order_statuses(array('state' => $status['state']));
 
-    $this->query->add_where($this->options['group'], "$this->table_alias.status", array_keys($states), $this->operator);
+    $this->ensure_my_table();
+
+    // For each specified state, build an array of order statuses to check for.
+    $order_statuses = array();
+
+    foreach ($this->value as $state) {
+      $order_statuses += commerce_order_statuses(array('state' => $state));
+    }
+
+    $this->query->add_where($this->options['group'], "$this->table_alias.status", array_keys($order_statuses), $this->operator);
   }
 
   function op_empty() {
     $this->ensure_my_table();
+
     if ($this->operator == 'empty') {
       $operator = "IS NULL";
     }
