@@ -20,8 +20,11 @@ function commerce_payment_pane_checkout_form($form, &$form_state, $checkout_pane
 
   // Generate an array of payment method options for the checkout form.
   $options = array();
+  $payment_methods = $order->payment_methods;
+  // Sort the payment methods by their weight value.
+  uasort($payment_methods, 'commerce_sort_weight');
 
-  foreach ((array) $order->payment_methods as $instance_id => $method_info) {
+  foreach ((array) $payment_methods as $instance_id => $method_info) {
     // Ensure we've received a valid payment method.
     if ($payment_method = commerce_payment_method_load($method_info['method_id'])) {
       $options[$instance_id] = $payment_method->display_title;
