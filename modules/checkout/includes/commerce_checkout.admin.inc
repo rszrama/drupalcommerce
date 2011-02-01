@@ -101,7 +101,7 @@ function commerce_checkout_builder_form_save_submit($form, &$form_state) {
       // Accommodate the "Disabled" pseudo-page in the form.
       if ($data['page'] == 'disabled') {
         $checkout_pane['enabled'] = FALSE;
-        unset($checkout_pane['page']);
+        $checkout_pane['page'] = 'disabled';
       }
       else {
         $checkout_pane['enabled'] = TRUE;
