@@ -10,7 +10,7 @@ class commerce_order_handler_filter_order_status extends views_handler_filter_in
       $this->value_title = t('Status');
 
       foreach (commerce_order_statuses() as $name => $status) {
-        $options[$name] = $status->title;
+        $options[$name] = $status['title'];
       }
       $this->value_options = $options;
     }
