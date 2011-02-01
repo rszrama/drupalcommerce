@@ -108,7 +108,7 @@ function commerce_order_permission() {
 function commerce_order_commerce_checkout_pane_info() {
   $checkout_panes = array();
 
-  $checkout_panes['account'] = (object) array(
+  $checkout_panes['account'] = array(
     'title' => t('Account information'),
     'file' => 'includes/commerce_order.checkout_pane.inc',
     'base' => 'commerce_order_account_pane',

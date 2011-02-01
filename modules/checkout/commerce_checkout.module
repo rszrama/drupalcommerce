@@ -309,14 +309,14 @@ function commerce_checkout_commerce_checkout_page_info() {
 function commerce_checkout_commerce_checkout_pane_info() {
   $checkout_panes = array();
 
-  $checkout_panes['checkout_review'] = (object) array(
+  $checkout_panes['checkout_review'] = array(
     'title' => t('Review'),
     'file' => 'includes/commerce_checkout.checkout_pane.inc',
     'base' => 'commerce_checkout_review_pane',
     'page' => 'review',
   );
 
-  $checkout_panes['checkout_completion_message'] = (object) array(
+  $checkout_panes['checkout_completion_message'] = array(
     'title' => t('Completion message'),
     'file' => 'includes/commerce_checkout.checkout_pane.inc',
     'base' => 'commerce_checkout_completion_message_pane',
@@ -427,15 +427,15 @@ function commerce_checkout_panes($conditions = array()) {
 
   // Cache the saved checkout pane data if it hasn't been loaded yet.
   if (!isset($checkout_panes)) {
-    $saved_panes = db_query('SELECT * FROM {commerce_checkout_pane}')->fetchAllAssoc('pane_id');
+    $saved_panes = db_query('SELECT * FROM {commerce_checkout_pane}')->fetchAllAssoc('pane_id', PDO::FETCH_ASSOC);
 
     // Load panes defined by modules.
     $checkout_panes = array();
 
     foreach (module_implements('commerce_checkout_pane_info') as $module) {
       foreach (module_invoke($module, 'commerce_checkout_pane_info') as $pane_id => $checkout_pane) {
-        $checkout_pane->pane_id = $pane_id;
-        $checkout_pane->module = $module;
+        $checkout_pane['pane_id'] = $pane_id;
+        $checkout_pane['module'] = $module;
         $checkout_panes[$pane_id] = $checkout_pane;
       }
     }
@@ -446,14 +446,14 @@ function commerce_checkout_panes($conditions = array()) {
     foreach ($checkout_panes as $pane_id => $checkout_pane) {
       // Update the pane with saved data.
       if (!empty($saved_panes[$pane_id])) {
-        $checkout_pane = (object) array_merge((array) $saved_panes[$pane_id] + (array) $checkout_pane);
-        $checkout_pane->saved = TRUE;
+        $checkout_pane = array_merge($saved_panes[$pane_id], $checkout_pane);
+        $checkout_pane['saved'] = TRUE;
       }
 
       // Set some defaults for the checkout pane.
       $defaults = array(
         'base' => $pane_id,
-        'name' => $checkout_pane->title,
+        'name' => $checkout_pane['title'],
         'page' => 'checkout',
         'collapsible' => FALSE,
         'collapsed' => FALSE,
@@ -462,12 +462,12 @@ function commerce_checkout_panes($conditions = array()) {
         'review' => TRUE,
         'callbacks' => array(),
       );
-      $checkout_pane = (object) array_merge($defaults, (array) $checkout_pane);
+      $checkout_pane += $defaults;
 
       // Merge in default callbacks.
       foreach (array('settings_form', 'checkout_form', 'checkout_form_validate', 'checkout_form_submit', 'review') as $callback) {
-        if (!isset($checkout_pane->callbacks[$callback])) {
-          $checkout_pane->callbacks[$callback] = $checkout_pane->base . '_' . $callback;
+        if (!isset($checkout_pane['callbacks'][$callback])) {
+          $checkout_pane['callbacks'][$callback] = $checkout_pane['base'] . '_' . $callback;
         }
       }
 
@@ -475,7 +475,7 @@ function commerce_checkout_panes($conditions = array()) {
     }
 
     // Sort the panes by their weight value.
-    uasort($checkout_panes, 'commerce_sort_weight');
+    uasort($checkout_panes, 'drupal_sort_weight');
   }
 
   // Apply conditions to the returned panes if specified.
@@ -490,7 +490,7 @@ function commerce_checkout_panes($conditions = array()) {
       foreach ($conditions as $property => $value) {
         // If the current value for the specified property on the pane does not
         // match the filter value...
-        if ($checkout_pane->{$property} != $value) {
+        if ($checkout_pane[$property] != $value) {
           // Do not add it to the temporary array.
           $valid = FALSE;
         }
@@ -519,7 +519,7 @@ function commerce_checkout_panes($conditions = array()) {
  *     the type of query performed to save the checkout pane.
  */
 function commerce_checkout_pane_save($checkout_pane) {
-  return drupal_write_record('commerce_checkout_pane', $checkout_pane, !empty($checkout_pane->saved) ? 'pane_id' : array());
+  return drupal_write_record('commerce_checkout_pane', $checkout_pane, !empty($checkout_pane['saved']) ? 'pane_id' : array());
 }
 
 /**
@@ -529,7 +529,7 @@ function commerce_checkout_pane_save($checkout_pane) {
  *   The machine readable ID of the checkout pane.
  *
  * @return
- *   The requested checkout pane object or FALSE if not found.
+ *   The requested checkout pane array or FALSE if not found.
  */
 function commerce_checkout_pane_load($pane_id) {
   // Loads the entire list of panes.
@@ -550,7 +550,7 @@ function commerce_checkout_pane_load($pane_id) {
  *   The checkout pane object represented on the settings form.
  */
 function commerce_checkout_pane_settings_title($checkout_pane) {
-  return t("'@pane' checkout pane", array('@pane' => $checkout_pane->name));
+  return t("'@pane' checkout pane", array('@pane' => $checkout_pane['name']));
 }
 
 /**
@@ -567,7 +567,7 @@ function commerce_checkout_pane_reset($pane_id) {
  *   loading the checkout pane include file if specified.
  *
  * @param $checkout_pane
- *   The checkout pane object.
+ *   The checkout pane array.
  * @param $callback
  *   The callback function to return, one of:
  *   - settings_form
@@ -582,15 +582,15 @@ function commerce_checkout_pane_reset($pane_id) {
  */
 function commerce_checkout_pane_callback($checkout_pane, $callback) {
   // Include the checkout pane file if specified.
-  if (!empty($checkout_pane->file)) {
-    $parts = explode('.', $checkout_pane->file);
-    module_load_include(array_pop($parts), $checkout_pane->module, implode('.', $parts));
+  if (!empty($checkout_pane['file'])) {
+    $parts = explode('.', $checkout_pane['file']);
+    module_load_include(array_pop($parts), $checkout_pane['module'], implode('.', $parts));
   }
 
   // If the specified callback function exists, return it.
-  if (!empty($checkout_pane->callbacks[$callback]) &&
-      function_exists($checkout_pane->callbacks[$callback])) {
-    return $checkout_pane->callbacks[$callback];
+  if (!empty($checkout_pane['callbacks'][$callback]) &&
+      function_exists($checkout_pane['callbacks'][$callback])) {
+    return $checkout_pane['callbacks'][$callback];
   }
 
   // Otherwise return FALSE.
