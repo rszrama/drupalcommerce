@@ -18,6 +18,9 @@ function commerce_payment_pane_checkout_form($form, &$form_state, $checkout_pane
   $order->payment_methods = array();
   rules_invoke_all('commerce_payment_methods', $order);
 
+  // Sort the payment methods array by the enabling Rules' weight values.
+  uasort($order->payment_methods, 'drupal_sort_weight');
+
   // Generate an array of payment method options for the checkout form.
   $options = array();
 
