@@ -105,6 +105,8 @@ class commerce_order_plugin_argument_validate_user extends views_plugin_argument
         }
       }
       else {
+        // Otherwise return FALSE if the role based fallback isn't enabled or no
+        // roles are selected.
         return FALSE;
       }
     }
