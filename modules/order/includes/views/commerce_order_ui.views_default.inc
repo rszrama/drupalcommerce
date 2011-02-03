@@ -186,7 +186,7 @@ function commerce_order_ui_views_default_views() {
   $handler = $view->new_display('default', 'Defaults', 'default');
   $handler->display->display_options['title'] = 'Orders';
   $handler->display->display_options['access']['type'] = 'perm';
-  $handler->display->display_options['access']['perm'] = 'access orders';
+  $handler->display->display_options['access']['perm'] = 'view own orders';
   $handler->display->display_options['cache']['type'] = 'none';
   $handler->display->display_options['query']['type'] = 'views_query';
   $handler->display->display_options['exposed_form']['type'] = 'basic';
@@ -352,10 +352,10 @@ function commerce_order_ui_views_default_views() {
   $handler->display->display_options['arguments']['uid']['default_action'] = 'not found';
   $handler->display->display_options['arguments']['uid']['style_plugin'] = 'default_summary';
   $handler->display->display_options['arguments']['uid']['default_argument_type'] = 'fixed';
-  $handler->display->display_options['arguments']['uid']['validate_type'] = 'commerce_user';
-  $handler->display->display_options['arguments']['uid']['validate_options']['restrict_roles'] = 0;
+  $handler->display->display_options['arguments']['uid']['validate_type'] = 'current_user_or_role';
+  $handler->display->display_options['arguments']['uid']['validate_options']['restrict_roles'] = '1';
   $handler->display->display_options['arguments']['uid']['validate_options']['roles'] = array(
-    0 => '3',
+    3 => '3',
   );
   $handler->display->display_options['arguments']['uid']['break_phrase'] = 0;
   $handler->display->display_options['arguments']['uid']['not'] = 0;
