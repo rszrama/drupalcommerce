@@ -41,7 +41,7 @@ class CommerceCartTestCase extends CommerceBaseTestCase {
     $product_node = $this->createDummyProductNode($product->product_id, $product_name);
 
     // Log as a normal user to test cart process.
-    $normal_user = $this->drupalCreateUser(array('access checkout'));
+    $normal_user = $this->drupalCreateUser();
     $this->drupalLogin($normal_user);
 
     // Submit the add to cart form.
@@ -60,7 +60,11 @@ class CommerceCartTestCase extends CommerceBaseTestCase {
     $this->assertText($product->title, t('Product was added to the cart'));
 
     // Change quantity in the cart view form.
-    $this->drupalPost($cart_url, array('edit_quantity[1]' => 2), t('Update cart'));
+    // We search for the first quantity field in the html and change the
+    //   amount there.
+    $qty = $this->xpath("//input[starts-with(@name, 'edit_quantity')]");
+    $this->drupalPost($cart_url, array((string) $qty[0]['name'] => 2), t('Update cart'));
+    // Check if the amount has been really changed.
     $this->assertFieldByXPath("//input[starts-with(@id, 'edit-edit-quantity')]", 2, t('Cart updated with new quantity'));
 
     // Remove the product from the cart.
