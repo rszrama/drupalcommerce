@@ -34,13 +34,20 @@ class CommerceCartTestCase extends CommerceBaseTestCase {
     $this->createDummyProductDisplayContentType();
 
     // Create dummy product display nodes (and their corresponding product
-    //  entities),
+    //  entities).
     $sku = 'PROD-01';
     $product_name = 'Product One';
     $product = $this->createDummyProduct($sku, $product_name);
     $product_node = $this->createDummyProductNode($product->product_id, $product_name);
+
+    // Log as a normal user to test cart process.
+    $normal_user = $this->drupalCreateUser(array('access checkout'));
+    $this->drupalLogin($normal_user);
+
     // Submit the add to cart form.
     $this->drupalPost('node/' . $product_node->nid, array(), t('Add to cart'));
+    // We check the cart message.
+    $this->assertRaw($product_node->title.'</em> added to <a href="/cart">your cart</a>', t('Message of product added to the cart'));
 
     // Get the cart url.
     $links = commerce_line_item_summary_links();
@@ -52,7 +59,7 @@ class CommerceCartTestCase extends CommerceBaseTestCase {
     $this->assertNoText(t('Your shopping cart is empty.'), t('Cart is not empty'));
     $this->assertText($product->title, t('Product was added to the cart'));
 
-    // Change quantity
+    // Change quantity in the cart view form.
     $this->drupalPost($cart_url, array('edit_quantity[1]' => 2), t('Update cart'));
     $this->assertFieldByXPath("//input[starts-with(@id, 'edit-edit-quantity')]", 2, t('Cart updated with new quantity'));
 
