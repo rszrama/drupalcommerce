@@ -36,7 +36,18 @@ class commerce_line_item_handler_field_edit_delete extends commerce_line_item_ha
     foreach (element_children($form['edit_delete']) as $line_item_id) {
       // Check for the removal of an item.
       if ($form_state['clicked_button']['#name'] == 'delete-line-item-' . $line_item_id) {
+        // Get the title of the line item, if it's a product, use product title
+        //  if not, use the line item label
+        $line_item = commerce_line_item_load($line_item_id);
+        $line_item_wrapper = entity_metadata_wrapper('commerce_line_item', $line_item);
+        if ($line_item_wrapper->type->value() == 'product') {
+          $title = $line_item_wrapper->commerce_product->title->value();
+        }
+        else {
+          $title = $line_item_wrapper->line_item_label->value();
+        }
         commerce_cart_order_product_line_item_delete($order, $line_item_id);
+        drupal_set_message(t('%title removed from your cart.', array('%title' => $title)));
       }
     }
   }
