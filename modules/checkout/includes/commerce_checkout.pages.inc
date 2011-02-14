@@ -11,6 +11,7 @@
  * Redirects invalid checkout attempts or displays the checkout form if valid.
  */
 function commerce_checkout_router($order, $checkout_page = NULL) {
+  global $user;
   $checkout_pages = commerce_checkout_pages();
 
   // If no checkout page is specified, default to the first one.
@@ -18,17 +19,33 @@ function commerce_checkout_router($order, $checkout_page = NULL) {
     $checkout_page = reset($checkout_pages);
   }
 
-  // If the user does not have access to checkout the order, return a 404. We
-  // could return a 403, but then the user would know they've identified a
-  // potentially valid checkout URL.
+  // If the user does not have access to checkout the order and is not the
+  // owner of it, return a 404. We could return a 403, but then the user would
+  // know they've identified a potentially valid checkout URL.
   if (!commerce_checkout_access($order, $checkout_page)) {
-    return drupal_not_found();
+    // If the user is logged in and is the owner of the order, check the
+    // correct checkout page that should be displayed.
+    if ($order->uid && $order->uid == $user->uid) {
+      // If the order is not in a 'cart' state, redirect to the completion
+      // checkout page.
+      if (!commerce_cart_order_is_cart($order)) {
+        $checkout_page = $checkout_pages['complete'];
+      }
+      else {
+        // Check what's the correct page for cart state orders.
+        $order_status = commerce_order_status_load($order->status);
+        $checkout_page = isset($order_status['checkout_page']) ? $checkout_pages[$order_status['checkout_page']] : reset($checkout_pages);
+      }
+    }
+    else {
+      return drupal_not_found();
+    }
   }
 
   // If there are no line items on the order, redirect away.
-  $wrapper = entity_metadata_wrapper('commerce_order', $order);
+  $order_wrapper = entity_metadata_wrapper('commerce_order', $order);
 
-  if (commerce_line_items_quantity($wrapper->commerce_line_items, 'product') == 0) {
+  if (commerce_line_items_quantity($order_wrapper->commerce_line_items, 'product') == 0) {
     drupal_goto('<front>');
   }
 
