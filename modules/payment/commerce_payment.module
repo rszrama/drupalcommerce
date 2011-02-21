@@ -151,6 +151,28 @@ function commerce_payment_theme() {
 }
 
 /**
+ * Implements hook_modules_disabled().
+ *
+ * Disable rules for disabled payment methods.
+ */
+function commerce_payment_modules_disabled($modules) {
+  foreach($modules as $module_name) {
+    // Check if module being disabled implements payment methods.
+    if (module_hook($module_name, 'commerce_payment_method_info')) {
+      // Loop over all payment methods this module declares.
+      foreach (array_keys(module_invoke($module_name, 'commerce_payment_method_info')) as $payment_method_id) {
+        $rules_config = rules_config_load('commerce_payment_' . $payment_method_id);
+        if ($rules_config->active) {
+          // Disable the rule and save it.
+          $rules_config->active = FALSE;
+          $rules_config->save();
+        }
+      }
+    }
+  }
+}
+
+/**
  * Adds the necessary CSS for the line item summary template.
  */
 function template_preprocess_commerce_payment_totals(&$variables) {
