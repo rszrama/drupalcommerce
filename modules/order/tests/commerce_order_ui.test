@@ -30,8 +30,8 @@ class CommerceOrderUIAdminTest extends CommerceBaseTestCase {
    */
   public static function getInfo() {
     return array(
-      'name' => 'Commerce order functional tests for UI administration',
-      'description' => 'Test Order UI operations for administrators',
+      'name' => 'Order administration',
+      'description' => 'Test creating, editing and deleting an order through the order administration user interface.',
       'group' => 'Drupal Commerce',
     );
   }

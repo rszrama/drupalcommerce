@@ -30,8 +30,8 @@ class CommerceCheckoutTestProcess extends CommerceBaseTestCase {
    */
   public static function getInfo() {
     return array(
-      'name' => 'Commerce checkout process functional tests',
-      'description' => 'Tests the checkout process.',
+      'name' => 'Checkout process',
+      'description' => 'Test the entire checkout process. Including anonymous checkout and checkout panes functionality.',
       'group' => 'Drupal Commerce',
     );
   }
