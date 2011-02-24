@@ -57,7 +57,7 @@ class CommerceOrderUIAdminTest extends CommerceBaseTestCase {
     $this->drupalGet('admin/commerce/orders/add');
 
     // Fill in the billing address information
-    $country_field = 'commerce_customer_billing[und][profiles][0][commerce_billing_address][und][0][country]';
+    $country_field = 'commerce_customer_billing[und][profiles][0][commerce_customer_address][und][0][country]';
     $this->drupalPostAJAX(NULL, array($country_field => 'US'), $country_field);
 
     // Create the base order for the rest of tests. Assign it to the normal
