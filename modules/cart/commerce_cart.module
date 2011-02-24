@@ -168,8 +168,12 @@ function commerce_cart_form_alter(&$form, &$form_state, $form_id) {
     }
   }
   elseif (strpos($form_id, 'commerce_checkout_form_') === 0 && !empty($form['buttons']['cancel'])) {
-    // Override the submit handler for changing order status.
-    $form['buttons']['cancel']['#submit'] = array_merge($form['buttons']['cancel']['#submit'], array('commerce_cart_checkout_cancel_submit'));
+    // Override the submit handler for changing the order status on checkout cancel.
+    foreach ($form['buttons']['cancel']['#submit'] as $key => &$value) {
+      if ($value == 'commerce_checkout_form_cancel_submit') {
+        $value = 'commerce_cart_checkout_cancel_submit';
+      }
+    }
   }
 }
 
@@ -180,6 +184,9 @@ function commerce_cart_checkout_cancel_submit($form, &$form_state) {
   $order = commerce_order_load($form_state['order']->order_id);
   // Update the order to cart satus.
   $form_state['order'] = commerce_order_status_update($order, 'cart');
+
+  drupal_set_message(t('Checkout of your current order has been canceled and may be resumed when you are ready.'));
+
   // Redirect to cart on cancel.
   $form_state['redirect'] = 'cart';
 }
