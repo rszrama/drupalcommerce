@@ -171,7 +171,7 @@ function commerce_cart_form_alter(&$form, &$form_state, $form_id) {
     // Override the submit handler for changing the order status on checkout cancel.
     foreach ($form['buttons']['cancel']['#submit'] as $key => &$value) {
       if ($value == 'commerce_checkout_form_cancel_submit') {
-        $value = 'commerce_cart_checkout_cancel_submit';
+        $value = 'commerce_cart_checkout_form_cancel_submit';
       }
     }
   }
@@ -180,10 +180,14 @@ function commerce_cart_form_alter(&$form, &$form_state, $form_id) {
 /**
  * Submit handler to take back the order to cart status on cancel in checkout.
  */
-function commerce_cart_checkout_cancel_submit($form, &$form_state) {
+function commerce_cart_checkout_form_cancel_submit($form, &$form_state) {
+  // Update the order to the cart status.
   $order = commerce_order_load($form_state['order']->order_id);
-  // Update the order to cart satus.
-  $form_state['order'] = commerce_order_status_update($order, 'cart');
+  $form_state['order'] = commerce_order_status_update($order, 'cart', TRUE);
+
+  // Skip saving in the status update and manually save here to force a save
+  // even when the status doesn't actually change.
+  commerce_order_save($form_state['order']);
 
   drupal_set_message(t('Checkout of your current order has been canceled and may be resumed when you are ready.'));
 
